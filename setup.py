@@ -18,7 +18,7 @@ setup(
     author='anduorannador',
     author_email='anudorannador@gmail.com',
     url='https://github.com/Anudorannador/AnuPyUtilities',
-    packages=['easyview_pylibs'],
+    packages=['anupyutilities'],
     install_requires=[
         "SQLAlchemy",
         "requests",
