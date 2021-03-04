@@ -9,34 +9,43 @@ import logging
 from contextlib import contextmanager
 import urllib
 from sqlalchemy.ext.automap import automap_base
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine as sqlalchemy_create_engine
+from sqlalchemy import MetaData
 from sqlalchemy.orm import sessionmaker, scoped_session
 from collections import ChainMap
 
-class MysqlClient():
-    '''
-    MysqlClient
-    '''
-
-    def __init__(self, conf_name: str, host: str, port: int, user: str,
+def custruct_connect_string(host: str, port: int, user: str,
                 passwd: str, database: str,
-                connect_string_option_dict: dict = {},
-                create_engine_kwargs_dict: dict = {}):
-        self.conf_name = conf_name
-        logging.info("conf name: {}".format(conf_name))
-
+                connect_string_option_dict: dict = {}):
         # append some default params:
         connect_string_option_chain_map = (connect_string_option_dict, {'charset': 'utf-8'})
-        create_engine_kwargs_chain_map = (create_engine_kwargs_dict, {'convert_unicode': True})
 
         # https://docs.sqlalchemy.org/en/13/dialects/mysql.html#module-sqlalchemy.dialects.mysql.pymysql
         connect_string = "mysql+pymysql://{user}:{passwd}@{host}:{port}/{db}?{options}".format(
             user=user, passwd=urllib.parse.quote_plus(passwd), host=host, port=port, db=database,
             options=urllib.parse.urlencode(connect_string_option_chain_map)
         )
-        logging.info("connect mysql with: %s", connect_string)
 
-        self.engine = create_engine(connect_string, **create_engine_kwargs_chain_map)
+        return connect_string
+
+def create_engine(connect_string, create_engine_kwargs_dict: dict = {}):
+    logging.info("connect mysql with: %s", connect_string)
+    # append some default params:
+    create_engine_default_dict = {
+        'convert_unicode': True,
+        'pool_recycle': 3600
+    }
+    create_engine_kwargs_chain_map = (create_engine_kwargs_dict, create_engine_default_dict)
+    engine = sqlalchemy_create_engine(connect_string, **create_engine_kwargs_chain_map)
+    return engine
+
+
+class MysqlClientHelper():
+    '''
+    MysqlClient
+    '''
+    def __init__(self, engine):
+        self.engine = engine
 
         # Warning: if using automap, all schemes of the DB must have a primary key.
         # For more info, following this link:
