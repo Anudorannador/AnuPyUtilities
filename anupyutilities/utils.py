@@ -81,3 +81,17 @@ def timing(print_args=True, *print_arg_names):
         return _wrapper
 
     return decorating_function
+
+
+def str_decimal_normalize(num, fmt='{:.f}'):
+    '''return string that reprensent a normalized decimal.
+    This function would useful for the case that represent a decimal as string, for e.g, protobuf.
+    :param num: could be a number or string that could be inited by the construction function of Decimal
+        if not, an empty string '' will be returned.
+    '''
+    try:
+        num = Decimal(num).normalize()
+        return fmt.format(num)
+    except:
+        logging.error('can not convert to a Decimal object: {}, type: {}'.format(num, type(num)))
+        return ''
