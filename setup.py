@@ -13,7 +13,7 @@ from setuptools import setup
 
 setup(
     name='anupyutilities',
-    version='0.2.1',
+    version='0.2.2',
     description='Some Python utilities/toolkits',
     author='anduorannador',
     author_email='anudorannador@gmail.com',
@@ -22,6 +22,6 @@ setup(
     install_requires=[
         "SQLAlchemy",
         "PyMySQL",
-        "urllib"
+        "tzlocal"
     ]
 )

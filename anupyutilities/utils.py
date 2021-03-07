@@ -95,3 +95,8 @@ def str_decimal_normalize(num, fmt='{:.f}'):
     except:
         logging.error('can not convert to a Decimal object: {}, type: {}'.format(num, type(num)))
         return ''
+
+def local_now():
+    '''return datetime.now with local timezone.
+    '''
+    return datetime.now(tz=get_localzone())
