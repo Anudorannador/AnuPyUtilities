@@ -18,12 +18,12 @@ def custruct_connect_string(host: str, port: int, user: str,
                 passwd: str, database: str,
                 connect_string_option_dict: dict = {}):
         # append some default params:
-        connect_string_option_chain_map = (connect_string_option_dict, {'charset': 'utf-8'})
+        connect_string_option_chain_map = ChainMap(connect_string_option_dict, {'charset': 'utf8'})
 
         # https://docs.sqlalchemy.org/en/13/dialects/mysql.html#module-sqlalchemy.dialects.mysql.pymysql
         connect_string = "mysql+pymysql://{user}:{passwd}@{host}:{port}/{db}?{options}".format(
             user=user, passwd=urllib.parse.quote_plus(passwd), host=host, port=port, db=database,
-            options=urllib.parse.urlencode(connect_string_option_chain_map)
+            options=urllib.parse.urlencode(dict(**connect_string_option_chain_map))
         )
 
         return connect_string
@@ -35,7 +35,7 @@ def create_engine(connect_string, create_engine_kwargs_dict: dict = {}):
         'convert_unicode': True,
         'pool_recycle': 3600
     }
-    create_engine_kwargs_chain_map = (create_engine_kwargs_dict, create_engine_default_dict)
+    create_engine_kwargs_chain_map = ChainMap(create_engine_kwargs_dict, create_engine_default_dict)
     engine = sqlalchemy_create_engine(connect_string, **create_engine_kwargs_chain_map)
     return engine
 
